@@ -1,5 +1,5 @@
 {
-  "name": "@tsnobip/reason-lambda",
+  "name": "@hanishi/reason-lambda",
   "version": "0.2.0",
   "description": "Bucklescript bindings for AWS lambda handlers (v1 and v2)",
   "repository": "git+https://github.com/tsnobip/reason-lambda.git",
@@ -18,6 +18,7 @@
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "bsb -make-world",
+    "test": "yarn build && jest",
     "watch": "bsb -make-world -w"
   },
   "author": "Paul Tsnobiladzé <paul.tsnobiladze@gmail.com>",
