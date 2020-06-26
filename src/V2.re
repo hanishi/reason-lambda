@@ -5,45 +5,52 @@
  */
 module Response: {
   type t;
-
-  /**
-   * create a response from an optional stringified body
-   * and the different available options
-   */
-  [@bs.obj]
-  external make:
+  let make:
     (
       ~cookies: array(string)=?,
       ~isBase64Encoded: bool=?,
       ~statusCode: int,
       ~headers: Js.Dict.t(string)=?,
-      ~body: string=?,
+      ~body: 'a=?,
       unit
     ) =>
     t;
-
-  /**
-   * create a response from a JSON compliant body
-   */
-  let fromBody: 'a => t;
 } = {
-  [@unboxed]
-  type t =
-    | Response('a): t;
+  [@bs.deriving abstract]
+  type t = {
+    [@bs.optional]
+    cookies: array(string),
+    [@bs.optional]
+    isBase64Encoded: bool,
+    statusCode: int,
+    [@bs.optional]
+    headers: Js.Dict.t(string),
+    [@bs.optional]
+    body: string,
+  };
 
-  [@bs.obj]
-  external make:
-    (
-      ~cookies: array(string)=?,
-      ~isBase64Encoded: bool=?,
-      ~statusCode: int,
-      ~headers: Js.Dict.t(string)=?,
-      ~body: string=?,
-      unit
-    ) =>
-    t;
-
-  let fromBody = body => Response(body);
+  let make =
+      (
+        ~cookies: option(array(string))=?,
+        ~isBase64Encoded: option(bool)=?,
+        ~statusCode: int,
+        ~headers: option(Js.Dict.t(string))=?,
+        ~body: option('a)=?,
+        (),
+      ) =>
+    switch (body) {
+    | Some(body') =>
+      t(
+        ~cookies?,
+        ~isBase64Encoded?,
+        ~statusCode,
+        ~headers?,
+        ~body=?Js.Json.stringifyAny(body'),
+        (),
+      )
+    | None =>
+      t(~cookies?, ~isBase64Encoded?, ~statusCode, ~headers?, ~body=?None, ())
+    };
 };
 
 module Context = Common.Context;
